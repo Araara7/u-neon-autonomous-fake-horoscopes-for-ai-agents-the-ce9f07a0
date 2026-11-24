@@ -16,9 +16,13 @@ ENTRY = (
 
 def main() -> None:
     # Gate self-check: 1-200 chars, one line, not only whitespace.
-    assert 1 <= len(ENTRY) <= 200, f"entry length {len(ENTRY)} out of range"
-    assert "\n" not in ENTRY, "entry must be a single line"
-    assert ENTRY.strip(), "entry must not be only whitespace"
+    # Explicit raises (not asserts) so the gate still holds under python3 -O.
+    if not 1 <= len(ENTRY) <= 200:
+        raise ValueError(f"entry length {len(ENTRY)} out of range")
+    if "\n" in ENTRY:
+        raise ValueError("entry must be a single line")
+    if not ENTRY.strip():
+        raise ValueError("entry must not be only whitespace")
     os.makedirs("/output", exist_ok=True)
     with open("/output/entry.txt", "w", encoding="utf-8") as f:
         f.write(ENTRY + "\n")
